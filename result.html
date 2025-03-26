@@ -1,0 +1,79 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Scan Results</title>
+    <style>
+        body {
+            background: url('/static/J.A.R.V.I.S-background.jpg') no-repeat center center fixed;
+            background-size: cover;
+            color: #ffffff;
+            font-family: 'Courier New', Courier, monospace;
+            text-align: center;
+            margin: 0;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+        }
+        .container {
+            padding: 20px;
+            border-radius: 10px;
+            background: rgba(0, 0, 0, 0.8);
+            box-shadow: 0 0 20px rgba(0, 255, 0, 0.5);
+            max-width: 600px;
+            position: relative;
+        }
+        .safe {
+            color: #00ff00;
+        }
+        .malicious {
+            color: #ff0000;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h2>Scan Results</h2>
+        <p><strong>File Name:</strong> <span id="fileName"></span></p>
+        <p><strong>File Hash:</strong> <span id="fileHash"></span></p>
+        <p><strong>Malware Risk:</strong> <span id="malwareRisk"></span></p>
+        <p><strong>Entropy:</strong> <span id="entropy"></span></p>
+        <p><strong>Embedded Files:</strong> <span id="embeddedFiles"></span></p>
+        <p><strong>Steganography Check:</strong> <span id="stegoResult"></span></p>
+
+        <button onclick="goBack()">Scan Another File</button>
+    </div>
+
+    <script>
+        function displayResults() {
+            let scanData = localStorage.getItem("scanResult");
+            if (!scanData) {
+                document.body.innerHTML = "<h2 style='color:red;'>No scan data found!</h2>";
+                return;
+            }
+            
+            let result = JSON.parse(scanData);
+
+            document.getElementById("fileName").textContent = result.file_name;
+            document.getElementById("fileHash").textContent = result.file_hash;
+            document.getElementById("entropy").textContent = result.entropy.toFixed(4);
+
+            let malwareRiskElement = document.getElementById("malwareRisk");
+            malwareRiskElement.textContent = result.malware_risk;
+            malwareRiskElement.className = result.malware_risk === "Malicious" ? "malicious" : "safe";
+
+            document.getElementById("embeddedFiles").textContent = result.embedded_files.join(", ");
+            document.getElementById("stegoResult").textContent = result.steganography_result;
+        }
+
+        function goBack() {
+            localStorage.removeItem("scanResult");
+            window.location.href = "/";
+        }
+
+        window.onload = displayResults;
+    </script>
+</body>
+</html>
